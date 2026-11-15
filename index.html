@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kopf-Fit! – Aktivierungsspiele für den Unterrichtsbeginn</title>
+<style>
+  :root{
+    --pink:#e6398f; --lila:#8e3fbf; --blau:#2f8fe8; --gruen:#4cb825;
+    --gelb:#f2b705; --orange:#ff8a24; --rot:#ef3b3b; --tuerkis:#18b3a6;
+    --ink:#2b2340;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:"Comic Sans MS","Chalkboard SE","Comic Neue","Trebuchet MS",system-ui,sans-serif;
+    color:var(--ink);min-height:100vh;
+    background:
+      radial-gradient(circle at 8% 12%, #ffe3f1 0 11%, transparent 12%),
+      radial-gradient(circle at 92% 8%, #ddf1ff 0 10%, transparent 11%),
+      radial-gradient(circle at 88% 88%, #fff3c4 0 12%, transparent 13%),
+      radial-gradient(circle at 6% 92%, #e2f8d6 0 10%, transparent 11%),
+      linear-gradient(160deg,#fff7fb,#f3f9ff 50%,#f8fff1);
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:24px 18px 50px}
+  header{text-align:center;margin:8px 0 22px}
+  .title{font-size:clamp(2.2rem,6vw,4.2rem);font-weight:900;margin:0;line-height:1.1}
+  .title span{text-shadow:3px 3px 0 rgba(0,0,0,.12)}
+  .subtitle{font-size:clamp(1.05rem,2.4vw,1.45rem);color:var(--lila);margin:.4em 0 0;font-weight:700}
+  .intro{max-width:760px;margin:12px auto 0;text-align:center;font-size:1.05rem;line-height:1.5}
+
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:20px;margin-top:24px}
+  .card{
+    background:#fff;border-radius:26px;padding:20px 22px 22px;position:relative;
+    box-shadow:0 8px 0 rgba(0,0,0,.05),0 14px 30px rgba(80,40,120,.12);
+    border-top:10px solid var(--c);display:flex;flex-direction:column;
+  }
+  .card .icon{font-size:2.8rem;line-height:1}
+  .card h2{margin:6px 0 4px;font-size:1.55rem;color:var(--c)}
+  .badges{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 10px}
+  .badge{font-size:.8rem;font-weight:800;border-radius:999px;padding:3px 10px;background:#f2eefb}
+  .badge.a{background:#fff0d6;color:#b86200}
+  .badge.g{background:#e7f0ff;color:#2366b8}
+  .badge.t{background:#eefbe7;color:#2f7d12}
+  .card p{margin:.3em 0;line-height:1.45}
+  .card .how{background:#faf8ff;border-radius:16px;padding:10px 12px;margin:10px 0 12px;font-size:.95rem}
+  .card .how b{color:var(--c)}
+  .card .play{margin-top:auto;font:inherit;font-size:1.2rem;font-weight:900;color:#fff;border:none;border-radius:16px;padding:12px;cursor:pointer;background:var(--c);box-shadow:0 5px 0 rgba(0,0,0,.18)}
+  .card .play:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(0,0,0,.18)}
+  .randrow{text-align:center;margin-top:26px}
+  .randbtn{font:inherit;font-size:1.4rem;font-weight:900;color:#fff;border:none;border-radius:20px;padding:14px 30px;cursor:pointer;
+    background:linear-gradient(90deg,var(--pink),var(--orange),var(--gelb),var(--gruen),var(--blau),var(--lila));box-shadow:0 6px 0 #a42d6c}
+  footer{text-align:center;margin-top:26px;color:#8a82a0;font-size:.88rem;line-height:1.5}
+  kbd{background:#fff;border:2px solid #d8d2e8;border-bottom-width:4px;border-radius:8px;padding:1px 7px;font-family:inherit;font-weight:800}
+
+  /* ---------- Bühne ---------- */
+  #stage{position:fixed;inset:0;z-index:50;display:none;overflow:hidden;user-select:none;
+    background:
+      radial-gradient(circle at 12% 20%, rgba(230,57,143,.10) 0 9%, transparent 10%),
+      radial-gradient(circle at 85% 75%, rgba(47,143,232,.10) 0 12%, transparent 13%),
+      radial-gradient(circle at 80% 15%, rgba(242,183,5,.12) 0 7%, transparent 8%),
+      linear-gradient(135deg,#fff0f8,#eef7ff 45%,#f2ffe9);}
+  #stage.on{display:block}
+  .topbar{position:absolute;top:0;left:0;right:0;display:flex;align-items:center;gap:10px;padding:12px 16px;z-index:5;flex-wrap:wrap}
+  .pill{background:#fff;border-radius:999px;padding:8px 16px;font-weight:800;box-shadow:0 4px 0 rgba(0,0,0,.08)}
+  .grow{flex:1}
+  .tbtn{font:inherit;font-weight:800;border:none;border-radius:999px;padding:9px 16px;cursor:pointer;background:#fff;box-shadow:0 4px 0 rgba(0,0,0,.1)}
+  .tbtn:hover{background:#fdf2ff}
+  .live-speed{white-space:nowrap;display:flex;align-items:center;gap:8px;background:#fff;border-radius:999px;padding:4px 16px;box-shadow:0 4px 0 rgba(0,0,0,.08);font-weight:800}
+  .live-speed input{width:150px;accent-color:var(--lila)}
+  #play{position:absolute;inset:70px 16px 36px;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center}
+  .progress{position:absolute;left:16px;right:16px;bottom:12px;height:14px;background:#fff;border-radius:999px;overflow:hidden}
+  .progress div{height:100%;width:0;background:linear-gradient(90deg,var(--pink),var(--orange),var(--gelb),var(--gruen),var(--blau),var(--lila));transition:width .3s}
+
+  /* Einleitung im Spiel */
+  .introbox{background:#fff;border-radius:28px;padding:24px 30px;max-width:900px;width:100%;max-height:100%;overflow:auto;
+    box-shadow:0 10px 30px rgba(80,40,120,.15);text-align:left;border-top:12px solid var(--c)}
+  .introbox h2{margin:0 0 6px;font-size:clamp(1.8rem,4.5vh,2.8rem);color:var(--c)}
+  .introbox .rules{font-size:clamp(1.05rem,2.6vh,1.4rem);line-height:1.5}
+  .introbox .rules li{margin:4px 0}
+  .settings{display:grid;grid-template-columns:1fr 1fr;gap:12px 20px;margin-top:14px;background:#f7f5fc;border-radius:18px;padding:14px 16px}
+  @media(max-width:720px){.settings{grid-template-columns:1fr}}
+  .settings .lab{font-weight:800;font-size:.95rem;margin-bottom:5px;display:block}
+  .seg{display:flex;flex-wrap:wrap;gap:6px}
+  .seg input{display:none}
+  .seg label{flex:1 1 auto;text-align:center;cursor:pointer;padding:8px 10px;border-radius:12px;background:#fff;font-weight:700;border:3px solid transparent;font-size:.95rem}
+  .seg input:checked + label{border-color:var(--c);color:var(--c)}
+  .check{display:flex;align-items:center;gap:8px;font-weight:700;cursor:pointer;font-size:.95rem}
+  .check input{width:20px;height:20px;accent-color:var(--c)}
+  input[type=range]{width:100%;accent-color:var(--c)}
+  .speedrow{display:flex;justify-content:space-between;font-size:.8rem;color:#7a7190;font-weight:700}
+  .gobtn{display:block;width:100%;margin-top:16px;font:inherit;font-size:1.7rem;font-weight:900;color:#fff;border:none;border-radius:20px;padding:14px;cursor:pointer;background:var(--c);box-shadow:0 6px 0 rgba(0,0,0,.2)}
+
+  /* Countdown & Overlays */
+  #countdown{position:absolute;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;z-index:8;background:rgba(255,255,255,.6);backdrop-filter:blur(3px)}
+  #countdown.on{display:flex}
+  #cdNum{font-size:min(50vh,42vw);font-weight:900;line-height:1;text-shadow:8px 8px 0 rgba(0,0,0,.12)}
+  #cdText{font-size:clamp(1.3rem,4vh,2.4rem);font-weight:900;color:var(--lila)}
+  .zoom{animation:zoom 1s ease-out}
+  @keyframes zoom{0%{transform:scale(2.2);opacity:0}25%{transform:scale(1);opacity:1}85%{opacity:1}100%{transform:scale(.6);opacity:0}}
+  .overlay{position:absolute;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;z-index:9;background:rgba(255,255,255,.75);backdrop-filter:blur(4px);text-align:center;padding:20px}
+  .overlay.on{display:flex}
+  .overlay h2{font-size:clamp(2rem,7vh,4.5rem);margin:0 0 10px}
+  .overlay p{font-size:1.3rem;font-weight:700;margin:6px 0 18px}
+  .bigbtn{font:inherit;font-size:1.35rem;font-weight:900;border:none;border-radius:18px;padding:13px 24px;margin:6px;cursor:pointer;color:#fff;box-shadow:0 6px 0 rgba(0,0,0,.18)}
+  .bigbtn.g{background:var(--gruen)} .bigbtn.b{background:var(--blau)} .bigbtn.p{background:var(--pink)} .bigbtn.o{background:var(--orange)}
+  .confetti{position:absolute;top:-20px;width:12px;height:18px;border-radius:3px;animation:fall linear forwards;z-index:10}
+  @keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+  .pop{animation:pop .35s cubic-bezier(.3,1.6,.5,1)}
+  @keyframes pop{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+  .hintline{font-weight:800;color:#8a82a0;font-size:1rem;margin-top:2vh}
+  .sol{min-height:1.6em;font-size:clamp(1.3rem,4.5vh,2.6rem);font-weight:900;margin-top:2vh;opacity:0;transition:opacity .25s}
+  .sol.show{opacity:1}
+
+  /* Farb-Chaos */
+  .stroop{font-size:min(26vh,17vw);font-weight:900;line-height:1;padding:3vh 5vw;border-radius:30px;background:#fff;box-shadow:0 10px 30px rgba(0,0,0,.08);letter-spacing:2px;border:10px solid transparent}
+  .stroop.framed{border:10px dashed #2b2340}
+
+  /* Kapitän */
+  .cap{font-size:clamp(1.6rem,7vh,4rem);font-weight:900;color:var(--blau);min-height:1.3em}
+  .cmdemoji{font-size:min(26vh,22vw);line-height:1.1}
+  .cmdtext{font-size:clamp(2rem,9vh,5.5rem);font-weight:900;line-height:1.1}
+
+  /* Kette */
+  .kemoji{font-size:min(34vh,28vw);line-height:1.05}
+  .klabel{font-size:clamp(1.8rem,7vh,4rem);font-weight:900}
+  .dots{display:flex;gap:10px;justify-content:center;margin-top:3vh}
+  .dots i{width:22px;height:22px;border-radius:50%;background:#ddd6ee}
+  .dots i.on{background:var(--tuerkis)}
+  .qrow{display:flex;gap:1.4vw;flex-wrap:wrap;justify-content:center;margin:3vh 0}
+  .qbox{width:min(13vh,11vw);height:min(13vh,11vw);border-radius:22px;background:#fff;box-shadow:0 6px 0 rgba(0,0,0,.08);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:min(8vh,6.5vw);font-weight:900;color:#c9c2da;position:relative}
+  .qbox small{position:absolute;top:4px;left:8px;font-size:.9rem;color:#a39bb8}
+  .qbox span{font-size:.75rem;font-weight:800;color:#6c6380;margin-top:2px;line-height:1.1}
+  .bigtitle{font-size:clamp(2rem,8vh,5rem);font-weight:900}
+
+  /* Blitzblick */
+  .bgrid{display:grid;gap:1.6vh;justify-content:center}
+  .bcell{width:min(17vh,13vw);height:min(17vh,13vw);border-radius:24px;background:#fff;box-shadow:0 6px 0 rgba(0,0,0,.07);display:flex;align-items:center;justify-content:center;font-size:min(11vh,8.5vw)}
+  .bcell.gap{background:transparent;border:5px dashed #cfc7e2;box-shadow:none}
+  .bcell.hl{outline:8px solid var(--orange);animation:pop .4s}
+  .timebar{width:min(70vw,700px);height:16px;border-radius:999px;background:#fff;overflow:hidden;margin-top:2.5vh}
+  .timebar div{height:100%;width:100%;background:var(--orange)}
+
+  /* Zahlen */
+  .znum{font-size:min(45vh,36vw);font-weight:900;line-height:1;text-shadow:8px 8px 0 rgba(0,0,0,.1)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1 class="title" id="title">Kopf-Fit!</h1>
+    <p class="subtitle">⚡ 5 Aktivierungsspiele für den Unterrichtsbeginn – alle direkt am Platz ⚡</p>
+    <p class="intro">Jedes Spiel dauert ca. 3–5 Minuten und trainiert <b>Aufmerksamkeit</b> 🎯 und <b>Gedächtnis</b> 🧠. Am besten mit dem Beamer zeigen: Spiel auswählen, Regeln kurz vorlesen, Einstellungen wählen – los!</p>
+  </header>
+
+  <div class="cards" id="cards"></div>
+  <div class="randrow"><button class="randbtn" id="randBtn">🎲 Überrasch uns – Zufallsspiel!</button></div>
+
+  <footer>
+    Im Spiel: <kbd>Leertaste</kbd> weiter / Pause · <kbd>+</kbd> / <kbd>−</kbd> Tempo · <kbd>Esc</kbd> zurück zur Übersicht<br>
+    Tipp: Mit „Vollbild“ wirkt es am Beamer am besten.
+  </footer>
+</div>
+
+<!-- ================= BÜHNE ================= -->
+<div id="stage">
+  <div class="topbar">
+    <span class="pill" id="gamePill">Spiel</span>
+    <span class="pill" id="roundPill" style="display:none">1</span>
+    <span class="pill" id="rulePill" style="display:none"></span>
+    <span class="grow"></span>
+    <span class="live-speed" id="liveBox" style="display:none">🐢 <input type="range" id="liveSpeed" min="0" max="100"> 🐇 <span id="liveVal"></span></span>
+    <button class="tbtn" id="pauseBtn" style="display:none">⏸ Pause</button>
+    <button class="tbtn" id="fsBtn">⛶ Vollbild</button>
+    <button class="tbtn" id="exitBtn">🏠 Übersicht</button>
+  </div>
+  <div id="play"></div>
+  <div class="progress"><div id="prog"></div></div>
+
+  <div id="countdown"><div id="cdText">Mach dich bereit …</div><div id="cdNum">3</div></div>
+
+  <div class="overlay" id="pauseOv">
+    <h2>⏸ Pause</h2><p>Kurz durchatmen …</p>
+    <div><button class="bigbtn g" id="resumeBtn">▶ Weiter</button><button class="bigbtn p" id="pExit">🏠 Übersicht</button></div>
+  </div>
+  <div class="overlay" id="doneOv">
+    <h2>🎉 Stark gemacht! 🎉</h2><p id="doneText">Eure Köpfe sind jetzt hellwach! 🧠⚡</p>
+    <div><button class="bigbtn g" id="againBtn">🔁 Nochmal</button><button class="bigbtn b" id="fasterBtn">🐇 Nochmal – schneller!</button><button class="bigbtn o" id="otherBtn">🎲 Anderes Spiel</button><button class="bigbtn p" id="dExit">🏠 Übersicht</button></div>
+  </div>
+</div>
+
+<script>
+(() => {
+const $ = id => document.getElementById(id);
+const COLS = ['#e6398f','#8e3fbf','#2f8fe8','#18b3a6','#4cb825','#ff8a24','#ef3b3b','#f2b705'];
+const pick = a => a[Math.floor(Math.random()*a.length)];
+const shuffle = a => { a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]} return a; };
+const fmt = s => (Math.round(s*10)/10).toFixed(1).replace('.',',')+' s';
+
+/* ---------- Titel bunt ---------- */
+{ const t=$('title'), tx=t.textContent; t.textContent=''; [...tx].forEach((c,i)=>{const s=document.createElement('span');s.textContent=c;s.style.color=COLS[i%COLS.length];t.appendChild(s)}); }
+
+/* ---------- Ton & Sprache ---------- */
+let actx=null;
+function beep(f=660,d=.12,type='sine',v=.15){
+  try{ actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+    const o=actx.createOscillator(),g=actx.createGain(); o.type=type;o.frequency.value=f;
+    g.gain.setValueAtTime(v,actx.currentTime); g.gain.exponentialRampToValueAtTime(.0001,actx.currentTime+d);
+    o.connect(g);g.connect(actx.destination);o.start();o.stop(actx.currentTime+d+.02);}catch(e){}
+}
+function say(t){
+  try{ if(!('speechSynthesis' in window)) return; speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(t); u.lang='de-DE'; u.rate=1.0;
+    const v=speechSynthesis.getVoices().find(v=>v.lang&&v.lang.startsWith('de')); if(v) u.voice=v;
+    speechSynthesis.speak(u);}catch(e){}
+}
+
+/* ---------- Daten ---------- */
+const FARBEN=[{n:'ROT',c:'#ef3b3b'},{n:'BLAU',c:'#2f8fe8'},{n:'GRÜN',c:'#3aa616'},{n:'GELB',c:'#f2b705'},{n:'LILA',c:'#8e3fbf'},{n:'ORANGE',c:'#ff7a10'}];
+const KOMMANDOS=[
+  ['🙆','Hände auf den Kopf!'],['👍','Daumen hoch!'],['👏','Zweimal klatschen!'],['🙈','Augen zuhalten!'],
+  ['👃','Auf die Nase tippen!'],['🤷','Schultern hochziehen!'],['👋','Winken!'],['💪','Muskeln zeigen!'],
+  ['🙌','Hände nach oben!'],['🤫','Finger auf den Mund!'],['👂','Ohrläppchen fassen!'],['🦶','Mit den Füßen trippeln!'],
+  ['✊','Fäuste machen!'],['🤞','Finger kreuzen!'],['🫳','Hände flach auf den Tisch!'],['🙃','Kopf zur Seite neigen!']
+];
+const BEWEGUNGEN=[
+  {e:'👏',t:'Klatschen'},{e:'🦶',t:'Stampfen'},{e:'👍',t:'Daumen hoch'},{e:'👃',t:'Nase tippen'},
+  {e:'🙌',t:'Hände hoch'},{e:'🤷',t:'Schultern hoch'},{e:'👂',t:'Ohr zupfen'},{e:'🫳',t:'Tisch klopfen'}
+];
+const EMOJIS='🍎 🚲 🐶 ⚽ 🎈 🌵 🦊 🎸 ⏰ 🍕 🚀 🐢 🌈 🔑 📚 🍌 🐙 🎩 🧀 🌻 🦋 🚗 🍩 ⭐ 🐝 🎲 🧦 🍉 🐳 🦒 ☂️ 🎁 🥨 🦉 🍄 🎧 🧸 🥕 ⛵ 🐸 🍓 ✏️ 🕶️ 🐧 🧁 🪁 🦕 🍦'.split(' ');
+
+/* ---------- Spiele-Definitionen ---------- */
+const GAMES = {
+  stroop:{
+    icon:'🎨', title:'Farb-Chaos', c:'#e6398f', badges:['a'],
+    short:'Ein Farbwort erscheint – aber in einer anderen Farbe! Wer sagt die richtige Farbe?',
+    how:'<b>Sag laut die FARBE</b> der Schrift – nicht das Wort. Profi: Bei Rahmen das <b>Wort</b> lesen.',
+    rules:`<ul>
+      <li>Auf dem Bildschirm erscheint ein Farbwort, z. B. <b style="color:#2f8fe8">ROT</b>.</li>
+      <li>Ihr sagt <b>gemeinsam laut die Farbe der Schrift</b> – hier also „Blau“!</li>
+      <li>Lasst euch nicht austricksen: Das Gehirn will automatisch das Wort lesen. 😉</li>
+      <li><b>🔥 Profi:</b> 6 Farben. Hat das Wort einen <b>gestrichelten Rahmen</b>, wird stattdessen das <b>Wort</b> vorgelesen!</li></ul>`,
+    tempo:{min:.8,max:5,def:2.5,label:'Zeit pro Wort'},
+    opts:[{k:'rounds',type:'seg',label:'Anzahl Wörter',o:[['15','15'],['25','25'],['40','40']],d:'25'},
+          {k:'sol',type:'check',label:'✅ Lösung kurz einblenden'}],
+    auto:true
+  },
+  kapitaen:{
+    icon:'🧑‍✈️', title:'Kapitän sagt …', c:'#2f8fe8', badges:['a'],
+    short:'Nur wenn der Kapitän es sagt, wird mitgemacht. Sonst: eingefroren bleiben!',
+    how:'Steht <b>„Kapitän sagt:“</b> davor → mitmachen. Ohne Kapitän → <b>nicht bewegen!</b>',
+    rules:`<ul>
+      <li>Es erscheint ein Kommando, z. B. „👍 Daumen hoch!“ – alles direkt am Platz.</li>
+      <li>Steht <b>„🧑‍✈️ Kapitän sagt:“</b> davor, macht ihr die Bewegung und haltet sie, bis das nächste Kommando kommt.</li>
+      <li>Fehlt der Kapitän, <b>bewegt ihr euch nicht</b> – wer zuckt, ist reingefallen! 😄</li>
+      <li><b>🔥 Profi:</b> Fallen-Sätze wie „Der Koch sagt:“ oder „Kapitän fragt:“ zählen <b>nicht</b>.</li>
+      <li><b>🔊 Nur hören:</b> Die Kommandos werden vorgelesen, der Bildschirm bleibt leer – volle Konzentration auf die Ohren!</li></ul>`,
+    tempo:{min:1.5,max:7,def:3.5,label:'Zeit pro Kommando'},
+    opts:[{k:'rounds',type:'seg',label:'Anzahl Kommandos',o:[['12','12'],['20','20'],['30','30']],d:'20'},
+          {k:'speak',type:'check',label:'🔊 Kommandos vorlesen (Lautsprecher)'},
+          {k:'ear',type:'check',label:'👂 Nur hören – Text ausblenden'},
+          {k:'sol',type:'check',label:'✅ Auflösung einblenden'}],
+    auto:true
+  },
+  kette:{
+    icon:'🔗', title:'Bewegungs-Kette', c:'#18b3a6', badges:['g'],
+    short:'Merkt euch eine Kette aus Bewegungen und macht sie dann aus dem Kopf nach. Jede Runde wird sie länger!',
+    how:'Kette <b>anschauen</b>, merken – dann bei <b>„Jetzt ihr!“</b> gemeinsam nachmachen.',
+    rules:`<ul>
+      <li>Nacheinander erscheinen Bewegungen, z. B. 👏 Klatschen – 🦶 Stampfen – 👃 Nase tippen.</li>
+      <li><b>Nur anschauen und merken</b> – noch nicht mitmachen!</li>
+      <li>Bei <b>„🎬 Jetzt ihr!“</b> macht die Klasse die ganze Kette gemeinsam aus dem Gedächtnis nach.</li>
+      <li>Dann wird aufgelöst. In jeder Runde kommt <b>eine Bewegung dazu</b>. Wie lang schafft ihr?</li>
+      <li><b>🔥 Profi:</b> Mehr Bewegungen, nur Symbole ohne Text. Extra-schwer: <b>rückwärts</b> nachmachen!</li></ul>`,
+    tempo:{min:.6,max:3,def:1.6,label:'Zeit pro Bewegung'},
+    opts:[{k:'start',type:'seg',label:'Startlänge',o:[['2','2'],['3','3'],['4','4']],d:'3'},
+          {k:'back',type:'check',label:'🔄 Rückwärts nachmachen'}],
+    auto:false
+  },
+  blitz:{
+    icon:'⚡', title:'Blitzblick', c:'#ff8a24', badges:['g','a'],
+    short:'Schaut euch die Bilder genau an … Augen zu … Was fehlt? Oder was ist neu?',
+    how:'Bilder <b>einprägen</b> – Augen zu – erkennen, <b>was fehlt</b> oder <b>was neu ist</b>.',
+    rules:`<ul>
+      <li>Für kurze Zeit erscheinen mehrere Bilder. <b>Prägt sie euch gut ein!</b></li>
+      <li>Dann heißt es <b>„🙈 Augen zu!“</b> – alle halten sich die Augen zu.</li>
+      <li>Danach fehlt ein Bild (oder eines wurde ausgetauscht). Wer es weiß, meldet sich still – erst auf Kommando sagen alle die Lösung!</li>
+      <li><b>🔥 Profi:</b> Mehr Bilder – und die Plätze werden zusätzlich gemischt!</li></ul>`,
+    tempo:{min:3,max:20,def:10,label:'Zeit zum Einprägen'},
+    opts:[{k:'mode',type:'seg',label:'Frage',o:[['fehlt','❓ Was fehlt?'],['neu','🆕 Was ist neu?']],d:'fehlt'},
+          {k:'rounds',type:'seg',label:'Runden',o:[['3','3'],['5','5'],['8','8']],d:'5'}],
+    auto:false
+  },
+  zahlen:{
+    icon:'🔢', title:'Zahlen-Klatscher', c:'#8e3fbf', badges:['a','t'],
+    short:'Gemeinsam zählen – aber bei bestimmten Zahlen wird geklatscht statt gesprochen!',
+    how:'Zahl <b>laut sagen</b> – außer sie ist in der <b>Reihe</b>: dann <b>klatschen</b> 👏.',
+    rules:`<ul>
+      <li>Die Zahlen erscheinen nacheinander. Die Klasse sagt jede Zahl <b>laut</b>.</li>
+      <li>Gehört die Zahl zur gewählten <b>Reihe</b> (z. B. 3, 6, 9, 12 …), sagt ihr nichts, sondern <b>klatscht</b> 👏.</li>
+      <li><b>🔥 Profi:</b> Enthält die Zahl eine <b>7</b> oder ist sie in der <b>7er-Reihe</b> → <b>stampfen</b> 🦶. Trifft beides zu: klatschen <b>und</b> stampfen!</li>
+      <li>Extra-Herausforderung: Zahlen in zufälliger Reihenfolge statt der Reihe nach.</li></ul>`,
+    tempo:{min:.8,max:5,def:2.5,label:'Zeit pro Zahl'},
+    opts:[{k:'reihe',type:'seg',label:'Klatsch-Reihe',o:[['3','3er'],['4','4er'],['5','5er']],d:'3'},
+          {k:'max',type:'seg',label:'Zählen bis',o:[['30','30'],['50','50'],['100','100']],d:'30'},
+          {k:'rand',type:'check',label:'🔀 Zufällige Reihenfolge'},
+          {k:'sol',type:'check',label:'✅ Lösung kurz einblenden'}],
+    auto:true
+  }
+};
+const BADGE={a:['a','🎯 Aufmerksamkeit'],g:['g','🧠 Gedächtnis'],t:['t','➗ Kopfrechnen']};
+
+/* ---------- Übersicht ---------- */
+Object.entries(GAMES).forEach(([id,g])=>{
+  const d=document.createElement('div'); d.className='card'; d.style.setProperty('--c',g.c);
+  d.innerHTML=`<div class="icon">${g.icon}</div><h2>${g.title}</h2>
+    <div class="badges">${g.badges.map(b=>`<span class="badge ${BADGE[b][0]}">${BADGE[b][1]}</span>`).join('')}</div>
+    <p>${g.short}</p><div class="how">${g.how}</div>
+    <button class="play">▶ Spielen</button>`;
+  d.querySelector('.play').onclick=()=>openGame(id);
+  $('cards').appendChild(d);
+});
+$('randBtn').onclick=()=>openGame(pick(Object.keys(GAMES)));
+
+/* ---------- Zustand & Timer ---------- */
+const S={id:null,g:null,opt:{},sec:2,running:false,paused:false,t:null,t2:null,next:null,manual:null,i:0,total:0};
+function later(fn,ms){ clearTimeout(S.t); S.next=fn; S.t=setTimeout(()=>{S.next=null; if(S.running&&!S.paused) fn();},ms); }
+function clearTimers(){ clearTimeout(S.t); clearTimeout(S.t2); clearTimeout(S.cd); S.next=null; S.manual=null; try{speechSynthesis.cancel()}catch(e){} }
+const sl2sec = v => S.g.tempo.max-(S.g.tempo.max-S.g.tempo.min)*(v/100);
+const sec2sl = s => Math.round((S.g.tempo.max-s)/(S.g.tempo.max-S.g.tempo.min)*100);
+function setProg(f){ $('prog').style.width=(Math.max(0,Math.min(1,f))*100)+'%'; }
+function setRound(t){ const p=$('roundPill'); p.style.display=t?'':'none'; p.textContent=t||''; }
+const play = $('play');
+
+/* ---------- Spiel öffnen: Regeln + Einstellungen ---------- */
+function openGame(id){
+  clearTimers(); S.running=false; S.paused=false;
+  S.id=id; S.g=GAMES[id];
+  const g=S.g;
+  $('stage').classList.add('on'); $('stage').style.setProperty('--c',g.c);
+  $('doneOv').classList.remove('on'); $('pauseOv').classList.remove('on');
+  $('gamePill').textContent=g.icon+' '+g.title;
+  setRound(null); $('rulePill').style.display='none'; $('liveBox').style.display='none'; $('pauseBtn').style.display='none'; setProg(0);
+  const keep=S.saved&&S.saved[id]||{};
+  const optHtml=[
+    seg('level','Schwierigkeit',[['basis','⭐ Basis'],['profi','🔥 Profi']],keep.level||'basis'),
+    ...g.opts.map(o=>o.type==='seg'?seg(o.k,o.label,o.o,keep[o.k]||o.d):`<div style="align-self:center"><label class="check"><input type="checkbox" data-k="${o.k}" ${keep[o.k]?'checked':''}> ${o.label}</label></div>`)
+  ].join('');
+  const tv = keep.sec || g.tempo.def;
+  play.innerHTML=`<div class="introbox" style="--c:${g.c}">
+    <h2>${g.icon} ${g.title}</h2>
+    <div class="rules">${g.rules}</div>
+    <div class="settings">
+      ${optHtml}
+      <div style="grid-column:1/-1"><span class="lab">🐢 Tempo 🐇 – ${g.tempo.label}: <span id="tval" style="color:${g.c}">${fmt(tv)}</span></span>
+        <input type="range" id="tempo" min="0" max="100" value="${sec2sl(tv)}">
+        <div class="speedrow"><span>🐢 langsam (${fmt(g.tempo.max)})</span><span>schnell (${fmt(g.tempo.min)}) 🐇</span></div></div>
+    </div>
+    <button class="gobtn" id="goBtn">▶ Start mit Countdown</button>
+  </div>`;
+  $('tempo').oninput=e=>$('tval').textContent=fmt(sl2sec(+e.target.value));
+  $('goBtn').onclick=startGame;
+  S.inIntro=true;
+  function seg(k,label,o,d){ return `<div><span class="lab">${label}</span><div class="seg">${o.map(([v,l],i)=>`<input type="radio" name="o_${k}" id="o_${k}_${i}" value="${v}" ${v===d?'checked':''}><label for="o_${k}_${i}">${l}</label>`).join('')}</div></div>`; }
+}
+
+function readOpts(){
+  const o={};
+  play.querySelectorAll('input[type=radio]:checked').forEach(r=>o[r.name.slice(2)]=r.value);
+  play.querySelectorAll('input[type=checkbox]').forEach(c=>o[c.dataset.k]=c.checked);
+  o.sec=sl2sec(+$('tempo').value);
+  return o;
+}
+
+function startGame(){
+  if(S.inIntro){ S.opt=readOpts(); S.saved=S.saved||{}; S.saved[S.id]={...S.opt}; }
+  S.inIntro=false; S.sec=S.opt.sec; S.profi=S.opt.level==='profi';
+  $('liveSpeed').value=sec2sl(S.sec); $('liveVal').textContent=fmt(S.sec);
+  $('liveBox').style.display=''; $('pauseBtn').style.display='';
+  $('doneOv').classList.remove('on');
+  play.innerHTML=''; setProg(0);
+  if(S.opt.speak||S.opt.ear) say(' '); // Sprachausgabe "aufwecken"
+  countdown(()=>{ S.running=true; RUN[S.id](); });
+}
+
+function countdown(done){
+  const cd=$('countdown'),num=$('cdNum'),tx=$('cdText');
+  cd.classList.add('on');
+  const msgs={3:'Alle bereit? 👀',2:'Aufgepasst …',1:'Fertig …',0:'LOS! 🚀'};
+  let n=3;
+  const tick=()=>{
+    num.textContent=n; num.style.color=COLS[(3-n)*2%COLS.length]; tx.textContent=msgs[n];
+    num.classList.remove('zoom'); void num.offsetWidth; num.classList.add('zoom');
+    beep(n===0?990:520,n===0?.35:.13,n===0?'triangle':'sine',.18);
+    if(n===0){ S.cd=setTimeout(()=>{cd.classList.remove('on');done();},800); }
+    else { n--; S.cd=setTimeout(tick,1000); }
+  };
+  tick();
+}
+
+function finish(text){
+  S.running=false; clearTimers(); setProg(1);
+  $('doneText').textContent=text||'Eure Köpfe sind jetzt hellwach! 🧠⚡';
+  $('doneOv').classList.add('on');
+  [523,659,784,1046].forEach((f,i)=>setTimeout(()=>beep(f,.18,'triangle',.15),i*140));
+  for(let i=0;i<110;i++){ const c=document.createElement('div'); c.className='confetti';
+    c.style.left=Math.random()*100+'vw'; c.style.background=COLS[i%COLS.length];
+    c.style.animationDuration=(2+Math.random()*2.5)+'s'; c.style.animationDelay=(Math.random()*.8)+'s';
+    $('stage').appendChild(c); setTimeout(()=>c.remove(),5200); }
+}
+
+function showSol(html,color){
+  if(!S.opt.sol) return;
+  clearTimeout(S.t2);
+  S.t2=setTimeout(()=>{ const s=play.querySelector('.sol'); if(s){s.innerHTML=html; s.style.color=color||'#2b2340'; s.classList.add('show');} }, S.sec*600);
+}
+function manualBtn(label,fn,cls='g'){
+  S.manual=fn;
+  return `<div><button class="bigbtn ${cls}" data-act="m">${label}</button></div><div class="hintline">oder <kbd>Leertaste</kbd></div>`;
+}
+play.addEventListener('click',e=>{ const b=e.target.closest('[data-act]'); if(!b) return;
+  if(b.dataset.act==='m' && S.manual){ const f=S.manual; S.manual=null; f(); }
+  if(b.dataset.act==='end') finish(S.endText);
+});
+
+/* ================= SPIEL-LOGIK ================= */
+const RUN = {
+  /* ---------- Farb-Chaos ---------- */
+  stroop(){
+    S.i=0; S.total=+S.opt.rounds; let last=null;
+    const pool=FARBEN.slice(0,S.profi?6:4);
+    const step=()=>{
+      if(++S.i>S.total) return finish('Farben-Profis! 🎨 Euer Gehirn hat sich nicht austricksen lassen.');
+      setRound(S.i+' / '+S.total); setProg((S.i-1)/S.total);
+      let w,ink;
+      do{ w=pick(pool); ink=pick(pool); if(Math.random()<.88) while(ink===w) ink=pick(pool); }while(last && w===last.w && ink===last.ink);
+      last={w,ink};
+      const framed=S.profi && Math.random()<.3;
+      play.innerHTML=`<div class="stroop pop ${framed?'framed':''}" style="color:${ink.c}">${w.n}</div><div class="sol"></div>`;
+      beep(600,.06,'square',.05);
+      const ans=framed?w:ink;
+      showSol(`→ ${framed?'Wort: ':''}${ans.n}`, ans.c);
+      later(step,S.sec*1000);
+    };
+    step();
+  },
+
+  /* ---------- Kapitän sagt ---------- */
+  kapitaen(){
+    S.i=0; S.total=+S.opt.rounds; let lastCmd=null, lastCap=0;
+    const tricks=['Der Koch sagt:','Kapitän fragt:','Der Matrose sagt:','Kapitän meint:'];
+    const step=()=>{
+      if(++S.i>S.total) return finish('Alle Mann an Deck! ⚓ Ihr habt super aufgepasst.');
+      setRound(S.i+' / '+S.total); setProg((S.i-1)/S.total);
+      let cmd; do{cmd=pick(KOMMANDOS)}while(cmd===lastCmd); lastCmd=cmd;
+      let cap=Math.random()<(S.profi?.55:.65);
+      if(lastCap>=4) cap=false; if(lastCap<=-2) cap=true;   // keine zu langen Serien
+      lastCap = cap ? Math.max(1,lastCap+1) : Math.min(-1,lastCap-1);
+      let prefix='';
+      if(cap) prefix='🧑‍✈️ Kapitän sagt:';
+      else if(S.profi && Math.random()<.6) prefix=pick(tricks);
+      const spoken=(prefix?prefix.replace('🧑‍✈️ ','')+' ':'')+cmd[1].replace('!','');
+      if(S.opt.ear){
+        play.innerHTML=`<div class="cmdemoji pop">👂</div><div class="cmdtext" style="color:#a39bb8">Gut zuhören …</div><div class="sol"></div>`;
+      } else {
+        play.innerHTML=`<div class="cap pop">${prefix||'&nbsp;'}</div>
+          <div class="cmdemoji pop">${cmd[0]}</div><div class="cmdtext pop">${cmd[1]}</div><div class="sol"></div>`;
+      }
+      if(S.opt.speak||S.opt.ear) say(spoken); else beep(cap?720:520,.07,'square',.05);
+      showSol(cap?'✅ Mitmachen!':'❌ Nicht bewegen!', cap?'#3aa616':'#ef3b3b');
+      later(step,S.sec*1000+(S.opt.speak||S.opt.ear?600:0));
+    };
+    step();
+  },
+
+  /* ---------- Bewegungs-Kette ---------- */
+  kette(){
+    const pool=BEWEGUNGEN.slice(0,S.profi?8:5);
+    let seq=[], round=0, best=0;
+    const add=()=>{ let m; do{m=pick(pool)}while(seq.length&&m===seq[seq.length-1]); seq.push(m); };
+    const back=!!S.opt.back;
+    S.endText=null;
+    const newRound=()=>{
+      round++;
+      if(round===1){ for(let i=0;i<+S.opt.start;i++) add(); } else add();
+      setRound('Runde '+round+' · '+seq.length+' Bewegungen'); setProg(Math.min(1,round/8));
+      play.innerHTML=`<div class="bigtitle pop" style="color:#18b3a6">Runde ${round}</div>
+        <div class="cmdtext" style="font-size:clamp(1.4rem,5vh,2.6rem);margin-top:2vh">👀 Nur anschauen und merken – <b>${seq.length}</b> Bewegungen!</div>`;
+      beep(660,.15,'triangle',.12);
+      later(()=>show(0),2200);
+    };
+    const show=k=>{
+      if(k>=seq.length) return yourTurn();
+      const m=seq[k];
+      play.innerHTML=`<div class="kemoji pop">${m.e}</div><div class="klabel" style="color:${COLS[k%COLS.length]}">${S.profi?'&nbsp;':m.t}</div>
+        <div class="dots">${seq.map((_,i)=>`<i class="${i<=k?'on':''}"></i>`).join('')}</div>`;
+      beep(500+k*40,.08,'square',.05);
+      // kurze Leerpause, damit gleiche Bewegungen hintereinander erkennbar sind
+      later(()=>{ play.innerHTML=`<div class="kemoji" style="opacity:.0">·</div><div class="dots">${seq.map((_,i)=>`<i class="${i<=k?'on':''}"></i>`).join('')}</div>`; later(()=>show(k+1),220); }, S.sec*1000);
+    };
+    const yourTurn=()=>{
+      beep(880,.3,'triangle',.15);
+      play.innerHTML=`<div class="bigtitle pop" style="color:#e6398f">🎬 Jetzt ihr!</div>
+        <div class="cmdtext" style="font-size:clamp(1.3rem,4.5vh,2.4rem)">Macht die Kette gemeinsam nach${back?' – <b>RÜCKWÄRTS!</b> 🔄':'!'}</div>
+        <div class="qrow">${seq.map((_,i)=>`<div class="qbox"><small>${i+1}</small>?</div>`).join('')}</div>
+        ${manualBtn('🔍 Auflösen',reveal,'b')}`;
+    };
+    const reveal=()=>{
+      best=seq.length;
+      const show=back?seq.slice().reverse():seq;
+      play.innerHTML=`<div class="bigtitle pop" style="color:#18b3a6">So war's${back?' (rückwärts)':''}:</div>
+        <div class="qrow">${show.map((m,i)=>`<div class="qbox pop" style="color:#2b2340"><small>${i+1}</small>${m.e}<span>${m.t}</span></div>`).join('')}</div>
+        <div><button class="bigbtn g" data-act="m">➕ Nächste Runde (${seq.length+1})</button><button class="bigbtn p" data-act="end">🏁 Fertig</button></div>
+        <div class="hintline"><kbd>Leertaste</kbd> = nächste Runde</div>`;
+      S.manual=newRound;
+      S.endText=`Eure längste Kette: ${best} Bewegungen! 🔗 Super Gedächtnis!`;
+    };
+    newRound();
+  },
+
+  /* ---------- Blitzblick ---------- */
+  blitz(){
+    const total=+S.opt.rounds, n=S.profi?12:6, cols=S.profi?4:3;
+    let round=0;
+    const grid=(arr,hl=-1)=>`<div class="bgrid" style="grid-template-columns:repeat(${cols},auto)">${arr.map((e,i)=>`<div class="bcell ${e===null?'gap':''} ${i===hl?'hl':''}">${e===null?'':e}</div>`).join('')}</div>`;
+    const next=()=>{
+      if(++round>total) return finish('Adleraugen! 🦅 Ihr habt euch richtig viel gemerkt.');
+      setRound('Runde '+round+' / '+total); setProg((round-1)/total);
+      const items=shuffle(EMOJIS).slice(0,n);
+      play.innerHTML=`<div class="cmdtext" style="font-size:clamp(1.3rem,4.5vh,2.4rem);margin-bottom:2vh">👀 Gut einprägen!</div>${grid(items)}<div class="timebar"><div id="tb"></div></div>`;
+      beep(660,.12,'triangle',.12);
+      const tb=$('tb'); tb.style.transition='none'; tb.style.width='100%';
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{ tb.style.transition=`width ${S.sec}s linear`; tb.style.width='0%'; }));
+      later(()=>cover(items),S.sec*1000);
+    };
+    const cover=items=>{
+      play.innerHTML=`<div class="kemoji pop">🙈</div><div class="bigtitle" style="color:#ff7a10">Augen zu!</div>`;
+      beep(400,.25,'sine',.15);
+      later(()=>change(items),3000);
+    };
+    const change=items=>{
+      const idx=Math.floor(Math.random()*items.length), orig=items[idx];
+      let arr=items.slice(), newE=null;
+      if(S.opt.mode==='fehlt'){
+        arr[idx]=null;
+        if(S.profi){ arr=shuffle(arr.filter(e=>e!==null)); }
+      } else {
+        do{newE=pick(EMOJIS)}while(items.includes(newE));
+        arr[idx]=newE;
+        if(S.profi) arr=shuffle(arr);
+      }
+      beep(880,.2,'triangle',.12);
+      const q=S.opt.mode==='fehlt'?'❓ Was fehlt?':'🆕 Was ist neu?';
+      play.innerHTML=`<div class="bigtitle pop" style="color:#ff7a10;margin-bottom:2vh">${q}</div>${grid(arr)}<div style="margin-top:2.5vh">${manualBtn('🔍 Auflösen',()=>reveal(arr,orig,newE),'b')}</div>`;
+    };
+    const reveal=(arr,orig,newE)=>{
+      let html, hl=-1;
+      if(S.opt.mode==='fehlt'){
+        html=`Es fehlte: <span style="font-size:1.6em">${orig}</span>`;
+        hl=arr.indexOf(null);
+        if(hl>=0) arr=arr.map(e=>e===null?orig:e);
+      } else {
+        hl=arr.indexOf(newE);
+        html=`Neu war: <span style="font-size:1.6em">${newE}</span> &nbsp;statt&nbsp; <span style="font-size:1.6em">${orig}</span>`;
+      }
+      play.innerHTML=`<div class="bigtitle pop" style="color:#3aa616;margin-bottom:2vh">${html}</div>${grid(arr,hl)}
+        <div style="margin-top:2.5vh">${manualBtn(round<total?'➡ Nächste Runde':'🏁 Fertig',next,'g')}</div>`;
+    };
+    next();
+  },
+
+  /* ---------- Zahlen-Klatscher ---------- */
+  zahlen(){
+    const r=+S.opt.reihe, max=+S.opt.max;
+    let nums=Array.from({length:max},(_,i)=>i+1);
+    if(S.opt.rand) nums=shuffle(nums);
+    S.i=0; S.total=max;
+    const rp=$('rulePill'); rp.style.display='';
+    rp.textContent=`${r}er-Reihe → 👏`+(S.profi?' · 7 → 🦶':'');
+    const step=()=>{
+      if(++S.i>S.total) return finish('Rechen-Raketen! 🚀 Klatschen, zählen, aufpassen – alles drin.');
+      const n=nums[S.i-1];
+      setRound(S.i+' / '+S.total); setProg((S.i-1)/S.total);
+      const a=n%r===0, b=S.profi&&(String(n).includes('7')||n%7===0);
+      play.innerHTML=`<div class="znum pop" style="color:${COLS[S.i%COLS.length]}">${n}</div><div class="sol"></div>`;
+      beep(560,.06,'square',.05);
+      const sol = a&&b?'👏 + 🦶 klatschen & stampfen!': a?'👏 klatschen!': b?'🦶 stampfen!':'🗣️ „'+n+'“';
+      showSol(sol, a||b?'#e6398f':'#6c6380');
+      later(step,S.sec*1000);
+    };
+    step();
+  }
+};
+
+/* ---------- Steuerung ---------- */
+function pause(on){
+  if(!S.running || !S.g) return;
+  S.paused=on; $('pauseOv').classList.toggle('on',on);
+  $('pauseBtn').textContent=on?'▶ Weiter':'⏸ Pause';
+  if(on){ clearTimeout(S.t); clearTimeout(S.t2); try{speechSynthesis.cancel()}catch(e){} }
+  else if(S.next){ const f=S.next; later(f,500); }
+}
+function exitStage(){
+  clearTimers(); S.running=false; S.paused=false; S.inIntro=false;
+  $('countdown').classList.remove('on'); $('stage').classList.remove('on');
+  $('pauseOv').classList.remove('on'); $('doneOv').classList.remove('on');
+  if(document.fullscreenElement) document.exitFullscreen().catch(()=>{});
+}
+function setLive(v){
+  v=Math.max(0,Math.min(100,v)); $('liveSpeed').value=v; S.sec=sl2sec(v); $('liveVal').textContent=fmt(S.sec);
+  if(S.saved&&S.saved[S.id]) S.saved[S.id].sec=S.sec;
+  S.opt.sec=S.sec;
+}
+$('liveSpeed').oninput=e=>setLive(+e.target.value);
+$('pauseBtn').onclick=()=>pause(!S.paused);
+$('resumeBtn').onclick=()=>pause(false);
+$('exitBtn').onclick=exitStage; $('pExit').onclick=exitStage; $('dExit').onclick=exitStage;
+$('againBtn').onclick=()=>startGame();
+$('fasterBtn').onclick=()=>{ S.opt.sec=Math.max(S.g.tempo.min, S.opt.sec*0.8); if(S.saved) S.saved[S.id].sec=S.opt.sec; startGame(); };
+$('otherBtn').onclick=()=>{ const ids=Object.keys(GAMES).filter(i=>i!==S.id); openGame(pick(ids)); };
+$('fsBtn').onclick=()=>{ if(!document.fullscreenElement) $('stage').requestFullscreen?.().catch(()=>{}); else document.exitFullscreen(); };
+
+document.addEventListener('keydown',e=>{
+  if(!$('stage').classList.contains('on')) return;
+  if(e.code==='Space'){
+    e.preventDefault();
+    if(S.inIntro){ startGame(); return; }
+    if($('doneOv').classList.contains('on')){ startGame(); return; }
+    if(S.paused){ pause(false); return; }
+    if(S.manual){ const f=S.manual; S.manual=null; f(); return; }
+    if(S.running && S.g.auto) pause(true);
+  }
+  else if(e.key==='Escape') exitStage();
+  else if(e.key==='p'||e.key==='P') pause(!S.paused);
+  else if((e.key==='+'||e.key==='ArrowUp') && !S.inIntro){ e.preventDefault(); setLive(+$('liveSpeed').value+8); }
+  else if((e.key==='-'||e.key==='ArrowDown') && !S.inIntro){ e.preventDefault(); setLive(+$('liveSpeed').value-8); }
+});
+})();
+</script>
+</body>
+</html>
